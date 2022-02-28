@@ -1,0 +1,7 @@
+server:
+  port: 8080
+
+demo:
+  datetime:
+    endpoint: "https://worldtimeapi.org/api/timezone"
+    timezone: "Europe/Paris"

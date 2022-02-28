@@ -1,0 +1,3 @@
+.idea
+target
+demo-wiremock/src/test/resources/wiremock
