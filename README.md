@@ -1,5 +1,6 @@
 # WireMock issue demo: using a `ResponseTemplateTrasnformer` in record mode
-> spring-cloud-contract-wiremock version: 3.1.1, WireMock version: 2.31.0 
+> * WireMock version: 2.31.0 
+> * wiremock/wiremock issue: https://github.com/wiremock/wiremock/issues/1823
 
 This demo project helps reproduce a problematic (but maybe intended?) behavior of [WireMock](https://github.com/wiremock/wiremock): 
 `ResponseTemplateTransformer` cannot be used to replace templates in response body while the WireMock server is running in record mode.
