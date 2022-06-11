@@ -9,6 +9,7 @@ import io.fries.demo.test.cucumber.wiremock.MockServers;
 import io.fries.demo.test.cucumber.wiremock.MockServersFactory;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties.WireMockServerProperties;
+import io.fries.demo.test.cucumber.wiremock.replay.template.ReplayDateTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -48,9 +49,9 @@ public class ReplayConfiguration {
     }
 
     @Bean
-    public ResponseTemplateTransformer responseTemplateTransformer(final ReplayDateFormatTemplate replayDateFormatTemplate) {
+    public ResponseTemplateTransformer responseTemplateTransformer(final ReplayDateTemplate replayDateTemplate) {
         return ResponseTemplateTransformer.builder()
-                .helper(ReplayDateFormatTemplate.NAME, replayDateFormatTemplate)
+                .helper(ReplayDateTemplate.NAME, replayDateTemplate)
                 .build();
     }
 }

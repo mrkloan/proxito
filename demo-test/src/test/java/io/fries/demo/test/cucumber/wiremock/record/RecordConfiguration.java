@@ -1,6 +1,7 @@
 package io.fries.demo.test.cucumber.wiremock.record;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.extension.Extension;
 import com.github.tomakehurst.wiremock.recording.RecordSpec;
 import io.cucumber.java.Scenario;
 import io.fries.demo.test.cucumber.wiremock.MockServer;
@@ -8,6 +9,8 @@ import io.fries.demo.test.cucumber.wiremock.MockServers;
 import io.fries.demo.test.cucumber.wiremock.MockServersFactory;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties.WireMockServerProperties;
+import io.fries.demo.test.cucumber.wiremock.record.transformer.RecordRequestTransformer;
+import io.fries.demo.test.cucumber.wiremock.record.transformer.RecordResponseTransformer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -17,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.recordSpec;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -50,8 +55,17 @@ public class RecordConfiguration {
         return new WireMockServer(wireMockConfig()
                 .port(properties.port())
                 .withRootDirectory(rootDirectory)
-//                .extensions(new RecordStubTransformer(properties.pattern(), properties.replacement()))
+                .extensions(toExtensions(properties))
         );
+    }
+
+    private Extension[] toExtensions(final WireMockServerProperties properties) {
+        final var recordRequestTransformer = Optional.ofNullable(properties.transformers().request()).map(RecordRequestTransformer::new);
+        final var recordResponseTransformer = Optional.ofNullable(properties.transformers().response()).map(RecordResponseTransformer::new);
+
+        return Stream.of(recordRequestTransformer, recordResponseTransformer)
+                .flatMap(Optional::stream)
+                .toArray(Extension[]::new);
     }
 
     private void createStubsDirectories(final String rootDirectory) {
