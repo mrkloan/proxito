@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="demo-test [replay]" type="JUnit" factoryName="JUnit">
+    <module name="demo-test" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="io.fries.demo.test.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="io.fries.demo.test" />
+    <option name="MAIN_CLASS_NAME" value="io.fries.demo.test.CucumberTestRunner" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <envs>
+      <env name="spring.profiles.active" value="mock,replay" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
