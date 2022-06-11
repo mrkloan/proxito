@@ -6,12 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(
-        classes = DemoApi.class,
-        webEnvironment = DEFINED_PORT
-)
+@SpringBootTest(classes = DemoApi.class, webEnvironment = RANDOM_PORT)
 @ComponentScan
 @AutoConfigureMockMvc
 @CucumberContextConfiguration
