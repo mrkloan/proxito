@@ -1,10 +1,11 @@
 package io.fries.demo.test.cucumber.wiremock.record;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import com.github.tomakehurst.wiremock.recording.RecordSpec;
+import io.cucumber.java.Scenario;
 import io.fries.demo.test.cucumber.wiremock.MockServer;
 import io.fries.demo.test.cucumber.wiremock.MockServers;
+import io.fries.demo.test.cucumber.wiremock.MockServersFactory;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties.WireMockServerProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.recordSpec;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static io.fries.demo.test.cucumber.ScenarioExtensions.normalizedName;
 import static java.lang.String.format;
 import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
@@ -28,33 +30,27 @@ import static java.util.stream.Collectors.toList;
 public class RecordConfiguration {
 
     @Bean
-    public MockServers mockServers(
-            final WireMockProperties properties,
-            final ResponseTemplateTransformer responseTemplateTransformer
-    ) {
-        return new MockServers(toRecordMockServers(properties, responseTemplateTransformer));
+    public MockServersFactory mockServersFactory(final WireMockProperties properties) {
+        return scenario -> new MockServers(toRecordMockServers(scenario, properties));
     }
 
-    private List<MockServer> toRecordMockServers(final WireMockProperties properties, final ResponseTemplateTransformer responseTemplateTransformer) {
+    private List<MockServer> toRecordMockServers(final Scenario scenario, final WireMockProperties properties) {
         return properties.servers().stream()
                 .map(serverProperties -> new RecordMockServer(
-                        toWireMockServer(serverProperties, responseTemplateTransformer),
+                        toWireMockServer(scenario, serverProperties),
                         toRecordSpec(serverProperties)
                 ))
                 .collect(toList());
     }
 
-    private WireMockServer toWireMockServer(final WireMockServerProperties properties, final ResponseTemplateTransformer responseTemplateTransformer) {
-        final var rootDirectory = format("src/test/resources/wiremock/%s", properties.partner());
+    private WireMockServer toWireMockServer(final Scenario scenario, final WireMockServerProperties properties) {
+        final var rootDirectory = format("src/test/resources/wiremock/%s/%s", normalizedName(scenario), properties.partner());
         createStubsDirectories(rootDirectory);
 
         return new WireMockServer(wireMockConfig()
                 .port(properties.port())
                 .withRootDirectory(rootDirectory)
-                .extensions(
-                        new RecordBodyTransformer(properties.pattern(), properties.replacement()),
-                        responseTemplateTransformer
-                )
+//                .extensions(new RecordStubTransformer(properties.pattern(), properties.replacement()))
         );
     }
 
@@ -73,14 +69,14 @@ public class RecordConfiguration {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void resetDirectory(final Path directory) {
         if (Files.notExists(directory)) {
             return;
         }
 
-        try {
-            Files.walk(directory)
-                    .sorted(reverseOrder())
+        try (final var files = Files.walk(directory)) {
+            files.sorted(reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (IOException e) {

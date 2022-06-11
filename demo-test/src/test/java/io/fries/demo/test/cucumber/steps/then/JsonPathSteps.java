@@ -12,6 +12,11 @@ public class JsonPathSteps {
     @Autowired
     private World world;
 
+    @Then("{string} exists")
+    public void then_json_path_exists(final String jsonPath) {
+        world.assertThat(jsonPath(jsonPath).exists());
+    }
+
     @Then("{string} has value {string}")
     public void then_json_path_has_value(final String jsonPath, final String expectedValue) {
         world.assertThat(jsonPath(jsonPath).value(equalTo(expectedValue)));
