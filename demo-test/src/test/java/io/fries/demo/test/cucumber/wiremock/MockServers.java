@@ -10,6 +10,10 @@ public class MockServers implements MockServer {
         this.servers = servers;
     }
 
+    public static MockServers none() {
+        return new MockServers(List.of());
+    }
+
     @Override
     public void start() {
         servers.forEach(MockServer::start);

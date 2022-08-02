@@ -8,15 +8,17 @@ import io.fries.demo.api.DemoApi;
 import io.fries.demo.test.cucumber.wiremock.MockServers;
 import io.fries.demo.test.cucumber.wiremock.MockServersFactory;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties;
+import io.fries.demo.test.cucumber.world.ScenarioId;
+import io.fries.demo.test.cucumber.world.World;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
-@SpringBootTest(classes = DemoApi.class, webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = DemoApi.class, webEnvironment = DEFINED_PORT)
 @ComponentScan
 @AutoConfigureMockMvc
 @CucumberContextConfiguration
@@ -24,13 +26,17 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class CucumberConfiguration {
 
     @Autowired
-    private MockServersFactory mockServersFactory;
+    private World world;
 
+    @Autowired
+    private MockServersFactory mockServersFactory;
     private MockServers mockServers;
 
     @Before
     public void beforeEach(final Scenario scenario) {
-        mockServers = mockServersFactory.createFor(scenario);
+        world.reset(ScenarioId.from(scenario));
+
+        mockServers = mockServersFactory.createFor(world);
         mockServers.start();
     }
 

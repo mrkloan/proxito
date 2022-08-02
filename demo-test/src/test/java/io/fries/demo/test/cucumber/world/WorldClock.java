@@ -1,21 +1,18 @@
 package io.fries.demo.test.cucumber.world;
 
-import org.springframework.stereotype.Component;
-
 import java.time.ZonedDateTime;
 import java.util.function.Supplier;
 
-@Component
 public class WorldClock {
 
     private Supplier<ZonedDateTime> clock;
 
-    public WorldClock() {
-        reset();
+    private WorldClock() {
+        clock = ZonedDateTime::now;
     }
 
-    public final void reset() {
-        clock = ZonedDateTime::now;
+    public static WorldClock reset() {
+        return new WorldClock();
     }
 
     public void fixedAt(final ZonedDateTime zonedDateTime) {

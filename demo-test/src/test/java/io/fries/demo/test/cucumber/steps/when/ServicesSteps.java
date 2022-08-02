@@ -12,5 +12,8 @@ public class ServicesSteps {
     @When("a request is sent to {string}")
     public void when_a_request_is_sent_to(final String endpoint) {
         world.performGet(endpoint);
+        world.tracker().assertThatAllRequestsWereRecorded();
+
+
     }
 }

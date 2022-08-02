@@ -3,14 +3,17 @@ package io.fries.demo.test.cucumber.wiremock.record;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.extension.Extension;
 import com.github.tomakehurst.wiremock.recording.RecordSpec;
-import io.cucumber.java.Scenario;
 import io.fries.demo.test.cucumber.wiremock.MockServer;
 import io.fries.demo.test.cucumber.wiremock.MockServers;
 import io.fries.demo.test.cucumber.wiremock.MockServersFactory;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties;
 import io.fries.demo.test.cucumber.wiremock.WireMockProperties.WireMockServerProperties;
-import io.fries.demo.test.cucumber.wiremock.record.transformer.RecordRequestTransformer;
-import io.fries.demo.test.cucumber.wiremock.record.transformer.RecordResponseTransformer;
+import io.fries.demo.test.cucumber.wiremock.WireMockProperties.WireMockTransformersProperties;
+import io.fries.demo.test.cucumber.wiremock.record.transformer.ConnectionCloseResponseTransformer;
+import io.fries.demo.test.cucumber.wiremock.record.transformer.IdempotentStubIdTransformer;
+import io.fries.demo.test.cucumber.wiremock.record.transformer.RequestPatternTransformer;
+import io.fries.demo.test.cucumber.wiremock.record.transformer.ResponseDateTransformer;
+import io.fries.demo.test.cucumber.world.World;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -20,12 +23,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.recordSpec;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static io.fries.demo.test.cucumber.ScenarioExtensions.normalizedName;
 import static java.lang.String.format;
 import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
@@ -35,35 +38,58 @@ import static java.util.stream.Collectors.toList;
 public class RecordConfiguration {
 
     @Bean
-    public MockServersFactory mockServersFactory(final WireMockProperties properties) {
-        return scenario -> new MockServers(toRecordMockServers(scenario, properties));
+    public MockServersFactory mockServersFactory(final WireMockProperties wireMockProperties) {
+        return world -> new MockServers(toRecordMockServers(world, wireMockProperties));
     }
 
-    private List<MockServer> toRecordMockServers(final Scenario scenario, final WireMockProperties properties) {
-        return properties.servers().stream()
-                .map(serverProperties -> new RecordMockServer(
-                        toWireMockServer(scenario, serverProperties),
-                        toRecordSpec(serverProperties)
+    private List<MockServer> toRecordMockServers(final World world, final WireMockProperties wireMockProperties) {
+        return wireMockProperties.servers().entrySet().stream()
+                .map(properties -> new RecordMockServer(
+                        toWireMockServer(world, properties),
+                        toRecordSpec(properties.getValue())
                 ))
                 .collect(toList());
     }
 
-    private WireMockServer toWireMockServer(final Scenario scenario, final WireMockServerProperties properties) {
-        final var rootDirectory = format("src/test/resources/wiremock/%s/%s", normalizedName(scenario), properties.partner());
+    private WireMockServer toWireMockServer(
+            final World world,
+            final Map.Entry<String, WireMockServerProperties> properties
+    ) {
+        final var serverName = properties.getKey();
+        final var serverProperties = properties.getValue();
+
+        final var rootDirectory = format("src/test/resources/wiremock/%s/%s", world.scenarioId(), serverName);
         createStubsDirectories(rootDirectory);
 
         return new WireMockServer(wireMockConfig()
-                .port(properties.port())
+                .port(serverProperties.port())
                 .withRootDirectory(rootDirectory)
-                .extensions(toExtensions(properties))
+                .extensions(toExtensions(world, properties))
         );
     }
 
-    private Extension[] toExtensions(final WireMockServerProperties properties) {
-        final var recordRequestTransformer = Optional.ofNullable(properties.transformers().request()).map(RecordRequestTransformer::new);
-        final var recordResponseTransformer = Optional.ofNullable(properties.transformers().response()).map(RecordResponseTransformer::new);
+    private Extension[] toExtensions(
+            final World world,
+            final Map.Entry<String, WireMockServerProperties> properties
+    ) {
+        final var serverName = properties.getKey();
+        final var serverProperties = properties.getValue();
 
-        return Stream.of(recordRequestTransformer, recordResponseTransformer)
+        final var recordRequestTransformer = Optional
+                .ofNullable(serverProperties.transformers())
+                .map(WireMockTransformersProperties::request)
+                .map(RequestPatternTransformer::new);
+        final var recordResponseTransformer = Optional
+                .ofNullable(serverProperties.transformers())
+                .map(WireMockTransformersProperties::response)
+                .map(transformerProperties -> new ResponseDateTransformer(world.clock(), transformerProperties));
+
+        return Stream.of(
+                        Optional.of(new ConnectionCloseResponseTransformer()),
+                        recordRequestTransformer,
+                        recordResponseTransformer,
+                        Optional.of(new IdempotentStubIdTransformer(serverName))
+                )
                 .flatMap(Optional::stream)
                 .toArray(Extension[]::new);
     }
@@ -103,6 +129,7 @@ public class RecordConfiguration {
                 .forTarget(properties.endpoint())
                 .ignoreRepeatRequests()
                 .makeStubsPersistent(true)
+                .extractTextBodiesOver(0)
                 .build();
     }
 }
