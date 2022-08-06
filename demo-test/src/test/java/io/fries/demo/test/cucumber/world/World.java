@@ -1,5 +1,9 @@
 package io.fries.demo.test.cucumber.world;
 
+import io.fries.demo.test.cucumber.world.request.RequestBuilder;
+import io.fries.demo.test.cucumber.world.request.RequestTracker;
+import io.fries.demo.test.cucumber.world.request.ServerProperties;
+import io.fries.demo.test.cucumber.world.scenario.ScenarioId;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -12,6 +16,7 @@ import static org.springframework.http.HttpMethod.GET;
 @Component
 public class World {
 
+    private final ServerProperties serverProperties;
     private final RestTemplate restTemplate;
 
     private ScenarioId scenarioId;
@@ -21,7 +26,8 @@ public class World {
     private ResponseEntity<String> response;
     private Object filteredData;
 
-    public World(final RestTemplateBuilder restTemplateBuilder) {
+    public World(final ServerProperties serverProperties, final RestTemplateBuilder restTemplateBuilder) {
+        this.serverProperties = serverProperties;
         this.restTemplate = restTemplateBuilder.build();
     }
 
@@ -29,7 +35,7 @@ public class World {
         this.scenarioId = scenarioId;
 
         clock = WorldClock.reset();
-        requestBuilder = RequestBuilder.empty();
+        requestBuilder = RequestBuilder.from(serverProperties);
         requestTracker = RequestTracker.empty();
         response = null;
         filteredData = null;

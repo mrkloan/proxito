@@ -1,4 +1,4 @@
-package io.fries.demo.test.cucumber.world;
+package io.fries.demo.test.cucumber.world.request;
 
 import java.net.URLEncoder;
 

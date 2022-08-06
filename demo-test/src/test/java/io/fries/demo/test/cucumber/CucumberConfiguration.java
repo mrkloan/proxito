@@ -7,11 +7,10 @@ import io.cucumber.spring.CucumberContextConfiguration;
 import io.fries.demo.api.DemoApi;
 import io.fries.demo.test.cucumber.wiremock.MockServers;
 import io.fries.demo.test.cucumber.wiremock.MockServersFactory;
-import io.fries.demo.test.cucumber.wiremock.WireMockProperties;
-import io.fries.demo.test.cucumber.world.ScenarioId;
 import io.fries.demo.test.cucumber.world.World;
+import io.fries.demo.test.cucumber.world.scenario.ScenarioId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +21,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ComponentScan
 @AutoConfigureMockMvc
 @CucumberContextConfiguration
-@EnableConfigurationProperties(WireMockProperties.class)
+@ConfigurationPropertiesScan
 public class CucumberConfiguration {
 
     @Autowired

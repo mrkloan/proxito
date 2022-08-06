@@ -1,0 +1,6 @@
+demo.test:
+  server:
+    port: 9000
+
+server:
+  port: ${demo.test.server.port}

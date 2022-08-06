@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @ConstructorBinding
-@ConfigurationProperties(prefix = "demo.wiremock")
+@ConfigurationProperties(prefix = "demo.test.wiremock")
 public record WireMockProperties(Map<String, WireMockServerProperties> servers) {
 
     public record WireMockServerProperties(

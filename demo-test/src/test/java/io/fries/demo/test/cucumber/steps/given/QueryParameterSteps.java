@@ -1,8 +1,8 @@
 package io.fries.demo.test.cucumber.steps.given;
 
 import io.cucumber.java.en.Given;
-import io.fries.demo.test.cucumber.world.QueryParameter;
 import io.fries.demo.test.cucumber.world.World;
+import io.fries.demo.test.cucumber.world.request.QueryParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.ZonedDateTime;

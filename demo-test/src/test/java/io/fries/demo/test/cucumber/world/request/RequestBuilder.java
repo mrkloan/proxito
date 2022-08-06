@@ -1,9 +1,11 @@
-package io.fries.demo.test.cucumber.world;
+package io.fries.demo.test.cucumber.world.request;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import static java.lang.String.format;
 
 public class RequestBuilder {
 
@@ -15,9 +17,11 @@ public class RequestBuilder {
         this.headers = headers;
     }
 
-    public static RequestBuilder empty() {
+    public static RequestBuilder from(final ServerProperties serverProperties) {
+        final var uri = format("http://127.0.0.1:%d", serverProperties.port());
+
         return new RequestBuilder(
-                UriComponentsBuilder.fromUriString("http://127.0.0.1:8080"),
+                UriComponentsBuilder.fromUriString(uri),
                 new HttpHeaders()
         );
     }
@@ -34,11 +38,6 @@ public class RequestBuilder {
 
     public RequestBuilder header(final String name, final String value) {
         headers.set(name, value);
-        return this;
-    }
-
-    public RequestBuilder removeHeader(final String name) {
-        headers.remove(name);
         return this;
     }
 

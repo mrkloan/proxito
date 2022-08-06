@@ -1,4 +1,4 @@
-package io.fries.demo.test.cucumber.world;
+package io.fries.demo.test.cucumber.world.request;
 
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.Response;
@@ -14,7 +14,7 @@ public class RequestTracker {
 
     private final Map<String, Response> responseByUrl;
 
-    private RequestTracker(Map<String, Response> responseByUrl) {
+    private RequestTracker(final Map<String, Response> responseByUrl) {
         this.responseByUrl = responseByUrl;
     }
 

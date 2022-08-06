@@ -9,6 +9,7 @@ Feature: Find journeys
     Then there are some sections with a physical mode "Metro"
     And some of these sections have the network "RATP"
     And all of these sections have carbon emission data
+    And the json response matches
 
     Examples:
       | label                      | origin           | destination      |
