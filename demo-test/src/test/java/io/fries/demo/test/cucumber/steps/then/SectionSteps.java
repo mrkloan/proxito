@@ -17,7 +17,7 @@ public class SectionSteps {
     @Then("there are some sections with a physical mode {string}")
     public void then_there_are_some_sections_with_a_physical_mode(final String physicalMode) {
         final JSONArray expectedSections = JsonPath
-                .parse(world.response().getBody())
+                .parse(world.filteredData())
                 .read(format("$.journeys[*].sections[?(@.display_informations.physical_mode == '%s')]", physicalMode));
 
         assertThat(expectedSections)
@@ -30,7 +30,7 @@ public class SectionSteps {
     @Then("some of these sections have the network {string}")
     public void then_some_of_these_sections_have_the_network(final String network) {
         final JSONArray expectedSections = JsonPath
-                .parse(world.response().getBody())
+                .parse(world.filteredData())
                 .read(format("$[?(@.display_informations.network == '%s')]", network));
 
         assertThat(expectedSections)
