@@ -85,10 +85,10 @@ public class RecordConfiguration {
                 .map(transformerProperties -> new ResponseDateTransformer(world.clock(), transformerProperties));
 
         return Stream.of(
+                        Optional.of(new IdempotentStubIdTransformer(serverName)),
                         Optional.of(new ConnectionCloseResponseTransformer()),
                         recordRequestTransformer,
-                        recordResponseTransformer,
-                        Optional.of(new IdempotentStubIdTransformer(serverName))
+                        recordResponseTransformer
                 )
                 .flatMap(Optional::stream)
                 .toArray(Extension[]::new);
