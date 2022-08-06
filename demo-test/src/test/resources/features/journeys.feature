@@ -8,3 +8,4 @@ Feature: Find journeys
     When a request is sent to "/journeys"
     Then there are some sections with a physical mode "Metro"
     And some of these sections have the network "RATP"
+    And all of these sections have carbon emission data

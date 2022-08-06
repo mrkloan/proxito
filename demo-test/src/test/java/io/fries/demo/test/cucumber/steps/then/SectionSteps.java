@@ -6,8 +6,8 @@ import io.fries.demo.test.cucumber.world.World;
 import net.minidev.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static io.fries.demo.test.cucumber.steps.then.json.JsonArrayAssert.assertThatJsonArray;
 import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionSteps {
 
@@ -20,7 +20,7 @@ public class SectionSteps {
                 .parse(world.filteredData())
                 .read(format("$.journeys[*].sections[?(@.display_informations.physical_mode == '%s')]", physicalMode));
 
-        assertThat(expectedSections)
+        assertThatJsonArray(expectedSections)
                 .as(format("There are some sections with a physical mode %s", physicalMode))
                 .isNotNull();
 
@@ -33,10 +33,21 @@ public class SectionSteps {
                 .parse(world.filteredData())
                 .read(format("$[?(@.display_informations.network == '%s')]", network));
 
-        assertThat(expectedSections)
+        assertThatJsonArray(expectedSections)
                 .as(format("Some of these sections have the network %s", network))
                 .isNotNull();
 
         world.filteredData(expectedSections);
+    }
+
+    @Then("all of these sections have carbon emission data")
+    public void then_all_of_these_sections_have_carbon_emission_data() {
+        assertThatJsonArray((JSONArray) world.filteredData())
+                .as("All of these sections have carbon emission data")
+                .isNotNull()
+                .allSatisfyJson(section -> section
+                        .assertNotNull("$.co2_emission.value")
+                        .assertNotNull("$.co2_emission.unit")
+                );
     }
 }
