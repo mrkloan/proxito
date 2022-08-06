@@ -39,7 +39,7 @@ public class ReplayConfiguration {
     ) {
         return wireMockProperties.servers().entrySet().stream()
                 .map(properties -> toWireMockServer(world, properties, responseTemplateTransformer))
-                .map(ReplayMockServer::new)
+                .map(server -> new ReplayMockServer(world, server))
                 .collect(toList());
     }
 
