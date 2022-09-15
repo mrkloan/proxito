@@ -7,4 +7,3 @@ demo:
   navitia:
     endpoint: "https://api.navitia.io/v1"
     token: "<A demo token can be found at https://doc.navitia.io/>"
-
