@@ -76,8 +76,8 @@ class RecordConfiguration {
             ?.let { RequestPatternTransformer(it) }
 
     private fun createStubsDirectories(rootDirectory: String) {
-        val filesDirectory = Path.of("$rootDirectory/__files", rootDirectory)
-        val mappingsDirectory = Path.of("$rootDirectory/mappings", rootDirectory)
+        val filesDirectory = Path.of("$rootDirectory/__files")
+        val mappingsDirectory = Path.of("$rootDirectory/mappings")
 
         try {
             resetDirectory(filesDirectory)
