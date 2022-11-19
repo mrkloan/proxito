@@ -18,6 +18,7 @@
     </parent>
 
     <modules>
+        <module>api-test-proxy</module>
         <module>demo-api</module>
         <module>demo-test</module>
     </modules>

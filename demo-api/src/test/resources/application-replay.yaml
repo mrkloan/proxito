@@ -1,0 +1,7 @@
+api.test:
+  proxies:
+    navitia:
+      port: 9001
+
+demo:
+  navitia.endpoint: "http://127.0.0.1:9001"

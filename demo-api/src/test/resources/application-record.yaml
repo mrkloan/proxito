@@ -1,0 +1,15 @@
+api.test:
+  proxies:
+    navitia:
+      port: 9001
+      endpoint: "https://api.navitia.io/v1"
+      transformers:
+        request:
+          pattern: "datetime=\\d{8}"
+          replacement: "datetime=\\\\d{8}"
+        response:
+          pattern: "time\" ?:\"\\d{8}"
+          replacement: "\\\\'time\":\"\\\\'yyyyMMdd"
+
+demo:
+  navitia.endpoint: "http://127.0.0.1:9001"
