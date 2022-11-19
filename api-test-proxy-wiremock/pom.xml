@@ -12,32 +12,26 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>demo-api</artifactId>
+    <artifactId>api-test-proxy-wiremock</artifactId>
 
     <dependencies>
-        <!-- Spring -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- Test -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Api Test Proxy -->
         <dependency>
             <groupId>io.fries.demo</groupId>
             <artifactId>api-test-proxy</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
+
+        <!-- Spring -->
         <dependency>
-            <groupId>io.fries.demo</groupId>
-            <artifactId>api-test-proxy-wiremock</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <!-- Wiremock -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-contract-wiremock</artifactId>
         </dependency>
     </dependencies>
 
