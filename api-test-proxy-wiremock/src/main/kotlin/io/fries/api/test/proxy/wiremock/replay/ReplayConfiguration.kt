@@ -4,11 +4,12 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import io.fries.api.test.ApiTestContext
-import io.fries.api.test.ApiTestProperties
-import io.fries.api.test.ProxyServerProperties
 import io.fries.api.test.proxy.ProxyServer
 import io.fries.api.test.proxy.ProxyServers
 import io.fries.api.test.proxy.ProxyServersFactory
+import io.fries.api.test.proxy.wiremock.ProxyServerProperties
+import io.fries.api.test.proxy.wiremock.ROOT_DIRECTORY
+import io.fries.api.test.proxy.wiremock.WireMockProperties
 import io.fries.api.test.proxy.wiremock.replay.template.DateTemplate
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,13 +21,13 @@ class ReplayConfiguration {
 
     @Bean
     fun proxyServersFactory(
-        apiTestProperties: ApiTestProperties,
+        wireMockProperties: WireMockProperties,
         responseTemplateTransformer: ResponseTemplateTransformer
     ): ProxyServersFactory = ProxyServersFactory { apiTestContext ->
         ProxyServers(
             toReplayMockServers(
                 apiTestContext,
-                apiTestProperties,
+                wireMockProperties,
                 responseTemplateTransformer
             )
         )
@@ -34,10 +35,10 @@ class ReplayConfiguration {
 
     private fun toReplayMockServers(
         apiTestContext: ApiTestContext,
-        apiTestProperties: ApiTestProperties,
+        wireMockProperties: WireMockProperties,
         responseTemplateTransformer: ResponseTemplateTransformer
     ): List<ProxyServer> {
-        return apiTestProperties.proxies.entries
+        return wireMockProperties.proxies.entries
             .map { properties -> toWireMockServer(apiTestContext, properties, responseTemplateTransformer) }
             .map { server -> ReplayProxyServer(server) }
     }
@@ -52,7 +53,7 @@ class ReplayConfiguration {
         return WireMockServer(
             WireMockConfiguration.wireMockConfig()
                 .port(serverProperties.port)
-                .withRootDirectory("$apiTestContext/$serverName")
+                .withRootDirectory("$ROOT_DIRECTORY/$apiTestContext/$serverName")
                 .extensions(responseTemplateTransformer)
         )
     }

@@ -1,15 +1,14 @@
-package io.fries.api.test
+package io.fries.api.test.proxy.wiremock
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
-import org.springframework.test.context.TestPropertySource
 import java.util.regex.Pattern
 
-@TestPropertySource
+internal const val ROOT_DIRECTORY: String = "src/test/resources/wiremock"
+
 @ConstructorBinding
-@ConfigurationProperties(prefix = "api.test")
-data class ApiTestProperties(
-    val recordPath: String = "src/test/resources/records",
+@ConfigurationProperties(prefix = "test.wiremock")
+data class WireMockProperties(
     val proxies: Map<String, ProxyServerProperties> = mapOf()
 )
 

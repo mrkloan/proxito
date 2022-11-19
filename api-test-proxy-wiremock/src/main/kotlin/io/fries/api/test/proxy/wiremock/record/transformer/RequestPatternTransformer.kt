@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.extension.StubMappingTransformer
 import com.github.tomakehurst.wiremock.matching.RequestPattern
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import io.fries.api.test.ProxyTransformerProperties
+import io.fries.api.test.proxy.wiremock.ProxyTransformerProperties
 
 class RequestPatternTransformer(private val properties: ProxyTransformerProperties) : StubMappingTransformer() {
 

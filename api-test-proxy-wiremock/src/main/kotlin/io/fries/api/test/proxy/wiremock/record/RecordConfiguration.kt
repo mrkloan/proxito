@@ -6,11 +6,12 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.Extension
 import com.github.tomakehurst.wiremock.recording.RecordSpec
 import io.fries.api.test.ApiTestContext
-import io.fries.api.test.ApiTestProperties
-import io.fries.api.test.ProxyServerProperties
 import io.fries.api.test.proxy.ProxyServer
 import io.fries.api.test.proxy.ProxyServers
 import io.fries.api.test.proxy.ProxyServersFactory
+import io.fries.api.test.proxy.wiremock.ProxyServerProperties
+import io.fries.api.test.proxy.wiremock.ROOT_DIRECTORY
+import io.fries.api.test.proxy.wiremock.WireMockProperties
 import io.fries.api.test.proxy.wiremock.record.transformer.ConnectionCloseResponseTransformer
 import io.fries.api.test.proxy.wiremock.record.transformer.IdempotentStubIdTransformer
 import io.fries.api.test.proxy.wiremock.record.transformer.RequestPatternTransformer
@@ -29,17 +30,17 @@ import java.time.ZonedDateTime
 class RecordConfiguration {
 
     @Bean
-    fun proxyServersFactory(apiTestProperties: ApiTestProperties, clock: () -> ZonedDateTime): ProxyServersFactory =
+    fun proxyServersFactory(wireMockProperties: WireMockProperties, clock: () -> ZonedDateTime): ProxyServersFactory =
         ProxyServersFactory { apiTestContext ->
-            ProxyServers(toRecordMockServers(apiTestContext, apiTestProperties, clock))
+            ProxyServers(toRecordMockServers(apiTestContext, wireMockProperties, clock))
         }
 
     private fun toRecordMockServers(
         apiTestContext: ApiTestContext,
-        apiTestProperties: ApiTestProperties,
+        wireMockProperties: WireMockProperties,
         clock: () -> ZonedDateTime
     ): List<ProxyServer> {
-        return apiTestProperties.proxies.entries
+        return wireMockProperties.proxies.entries
             .map { properties ->
                 RecordProxyServer(
                     toWireMockServer(apiTestContext, properties, clock),
@@ -55,7 +56,7 @@ class RecordConfiguration {
     ): WireMockServer {
         val serverName = properties.key
         val serverProperties = properties.value
-        val rootDirectory = Path.of("$apiTestContext/$serverName")
+        val rootDirectory = Path.of("$ROOT_DIRECTORY/$apiTestContext/$serverName")
         createStubsDirectories(rootDirectory)
 
         return WireMockServer(

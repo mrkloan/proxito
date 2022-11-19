@@ -1,4 +1,4 @@
-api.test:
+test.wiremock:
   proxies:
     navitia:
       port: 9001

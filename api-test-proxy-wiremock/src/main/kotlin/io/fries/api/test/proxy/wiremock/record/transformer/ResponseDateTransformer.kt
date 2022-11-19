@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.common.FileSource
 import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.StubMappingTransformer
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import io.fries.api.test.ProxyTransformerProperties
+import io.fries.api.test.proxy.wiremock.ProxyTransformerProperties
 import io.fries.api.test.proxy.wiremock.replay.template.DateTemplate
 import java.time.*
 import java.time.format.DateTimeFormatter
