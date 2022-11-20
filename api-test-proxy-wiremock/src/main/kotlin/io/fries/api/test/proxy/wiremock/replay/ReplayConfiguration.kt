@@ -13,19 +13,17 @@ import io.fries.api.test.proxy.wiremock.WireMockProperties
 import io.fries.api.test.proxy.wiremock.replay.template.DateTemplate
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 
 @Configuration
-@Profile("replay")
 class ReplayConfiguration {
 
     @Bean
-    fun proxyServersFactory(
+    fun replayProxyServersFactory(
         wireMockProperties: WireMockProperties,
         responseTemplateTransformer: ResponseTemplateTransformer
     ): ProxyServersFactory = ProxyServersFactory { apiTestContext ->
         ProxyServers(
-            toReplayMockServers(
+            toReplayProxyServers(
                 apiTestContext,
                 wireMockProperties,
                 responseTemplateTransformer
@@ -33,27 +31,25 @@ class ReplayConfiguration {
         )
     }
 
-    private fun toReplayMockServers(
+    private fun toReplayProxyServers(
         apiTestContext: ApiTestContext,
         wireMockProperties: WireMockProperties,
         responseTemplateTransformer: ResponseTemplateTransformer
     ): List<ProxyServer> {
-        return wireMockProperties.proxies.entries
-            .map { properties -> toWireMockServer(apiTestContext, properties, responseTemplateTransformer) }
+        return wireMockProperties.replay
+            .map { serverProperties -> toWireMockServer(apiTestContext, serverProperties, responseTemplateTransformer) }
             .map { server -> ReplayProxyServer(server) }
     }
 
     private fun toWireMockServer(
         apiTestContext: ApiTestContext,
-        properties: Map.Entry<String, ProxyServerProperties>,
+        serverProperties: ProxyServerProperties,
         responseTemplateTransformer: ResponseTemplateTransformer
     ): WireMockServer {
-        val serverName = properties.key
-        val serverProperties: ProxyServerProperties = properties.value
         return WireMockServer(
             WireMockConfiguration.wireMockConfig()
                 .port(serverProperties.port)
-                .withRootDirectory("$ROOT_DIRECTORY/$apiTestContext/$serverName")
+                .withRootDirectory("$ROOT_DIRECTORY/$apiTestContext/${serverProperties.name}")
                 .extensions(responseTemplateTransformer)
         )
     }

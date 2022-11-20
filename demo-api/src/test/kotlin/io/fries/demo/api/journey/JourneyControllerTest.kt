@@ -5,21 +5,18 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus.OK
 import org.springframework.web.util.DefaultUriBuilderFactory
 
 @ApiTest
 internal class JourneyControllerTest {
 
-    @LocalServerPort
-    private var port: Int = 0
     private lateinit var testRestTemplate: TestRestTemplate
 
     @BeforeEach
     internal fun setUp() {
         testRestTemplate = TestRestTemplate().apply {
-            setUriTemplateHandler(DefaultUriBuilderFactory("http://127.0.0.1:$port"))
+            setUriTemplateHandler(DefaultUriBuilderFactory("http://127.0.0.1:9000"))
         }
     }
 

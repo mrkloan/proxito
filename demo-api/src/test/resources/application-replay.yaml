@@ -1,7 +1,18 @@
 test.wiremock:
-  proxies:
-    navitia:
+  validate:
+    - name: 'api'
+      port: 9000
+      endpoint: "http://127.0.0.1:9090"
+      validators:
+        json:
+          fields-to-ignore:
+            - 'href'
+  replay:
+    - name: 'navitia'
       port: 9001
 
 demo:
   navitia.endpoint: "http://127.0.0.1:9001"
+
+server:
+  port: 9090

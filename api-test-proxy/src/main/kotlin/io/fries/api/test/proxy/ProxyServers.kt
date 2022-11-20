@@ -9,4 +9,6 @@ class ProxyServers(private val servers: List<ProxyServer> = listOf()) : ProxySer
     override fun stop() {
         servers.forEach(ProxyServer::stop)
     }
+
+    operator fun plus(other: ProxyServers): ProxyServers = ProxyServers(servers + other.servers)
 }

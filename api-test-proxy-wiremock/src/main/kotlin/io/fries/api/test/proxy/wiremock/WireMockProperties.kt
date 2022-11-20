@@ -9,13 +9,17 @@ internal const val ROOT_DIRECTORY: String = "src/test/resources/wiremock"
 @ConstructorBinding
 @ConfigurationProperties(prefix = "test.wiremock")
 data class WireMockProperties(
-    val proxies: Map<String, ProxyServerProperties> = mapOf()
+    val record: List<ProxyServerProperties> = listOf(),
+    val replay: List<ProxyServerProperties> = listOf(),
+    val validate: List<ProxyServerProperties> = listOf()
 )
 
 data class ProxyServerProperties(
+    val name: String,
     val port: Int,
     val endpoint: String?,
-    val transformers: ProxyTransformersProperties?
+    val transformers: ProxyTransformersProperties?,
+    val validators: ProxyValidatorsProperties?
 ) {
     init {
         require(port in 1..65535) { "port should be between 1 and 65535" }
@@ -36,3 +40,11 @@ data class ProxyTransformerProperties(
         require(replacement.isNotBlank()) { "replacement cannot be blank" }
     }
 }
+
+data class ProxyValidatorsProperties(
+    val json: JsonValidationProperties?
+)
+
+data class JsonValidationProperties(
+    val fieldsToIgnore: Set<String> = setOf()
+)

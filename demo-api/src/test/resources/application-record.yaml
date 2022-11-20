@@ -1,6 +1,9 @@
 test.wiremock:
-  proxies:
-    navitia:
+  record:
+    - name: 'api'
+      port: 9000
+      endpoint: "http://127.0.0.1:9090"
+    - name: 'navitia'
       port: 9001
       endpoint: "https://api.navitia.io/v1"
       transformers:
@@ -13,3 +16,6 @@ test.wiremock:
 
 demo:
   navitia.endpoint: "http://127.0.0.1:9001"
+
+server:
+  port: 9090

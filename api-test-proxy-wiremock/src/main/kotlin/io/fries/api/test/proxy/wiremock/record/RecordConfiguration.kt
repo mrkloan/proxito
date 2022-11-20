@@ -18,7 +18,6 @@ import io.fries.api.test.proxy.wiremock.record.transformer.RequestPatternTransfo
 import io.fries.api.test.proxy.wiremock.record.transformer.ResponseDateTransformer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.util.FileSystemUtils
 import java.io.IOException
 import java.nio.file.Files
@@ -26,55 +25,52 @@ import java.nio.file.Path
 import java.time.ZonedDateTime
 
 @Configuration
-@Profile("record")
 class RecordConfiguration {
 
     @Bean
     fun proxyServersFactory(wireMockProperties: WireMockProperties, clock: () -> ZonedDateTime): ProxyServersFactory =
         ProxyServersFactory { apiTestContext ->
-            ProxyServers(toRecordMockServers(apiTestContext, wireMockProperties, clock))
+            ProxyServers(toRecordProxyServers(apiTestContext, wireMockProperties, clock))
         }
 
-    private fun toRecordMockServers(
+    private fun toRecordProxyServers(
         apiTestContext: ApiTestContext,
         wireMockProperties: WireMockProperties,
         clock: () -> ZonedDateTime
     ): List<ProxyServer> {
-        return wireMockProperties.proxies.entries
-            .map { properties ->
+        return wireMockProperties.record
+            .map { serverProperties ->
                 RecordProxyServer(
-                    toWireMockServer(apiTestContext, properties, clock),
-                    toRecordSpec(properties.value)
+                    toWireMockServer(apiTestContext, serverProperties, clock),
+                    toRecordSpec(serverProperties)
                 )
             }
     }
 
     private fun toWireMockServer(
         apiTestContext: ApiTestContext,
-        properties: Map.Entry<String, ProxyServerProperties>,
+        serverProperties: ProxyServerProperties,
         clock: () -> ZonedDateTime
     ): WireMockServer {
-        val serverName = properties.key
-        val serverProperties = properties.value
-        val rootDirectory = Path.of("$ROOT_DIRECTORY/$apiTestContext/$serverName")
+        val rootDirectory = Path.of("$ROOT_DIRECTORY/$apiTestContext/${serverProperties.name}")
         createStubsDirectories(rootDirectory)
 
         return WireMockServer(
             WireMockConfiguration.wireMockConfig()
                 .port(serverProperties.port)
                 .withRootDirectory(rootDirectory.toString())
-                .extensions(*toExtensions(properties, clock))
+                .extensions(*toExtensions(serverProperties, clock))
         )
     }
 
     private fun toExtensions(
-        properties: Map.Entry<String, ProxyServerProperties>,
+        serverProperties: ProxyServerProperties,
         clock: () -> ZonedDateTime
     ): Array<Extension> = listOfNotNull(
-        IdempotentStubIdTransformer(properties.key),
+        IdempotentStubIdTransformer(serverProperties.name),
         ConnectionCloseResponseTransformer(),
-        requestPatternTransformer(properties.value),
-        responseDateTransformer(properties.value, clock)
+        requestPatternTransformer(serverProperties),
+        responseDateTransformer(serverProperties, clock)
     ).toTypedArray()
 
     private fun responseDateTransformer(serverProperties: ProxyServerProperties, clock: () -> ZonedDateTime) =
@@ -97,8 +93,8 @@ class RecordConfiguration {
         }
     }
 
-    private fun toRecordSpec(properties: ProxyServerProperties): RecordSpec = WireMock.recordSpec()
-        .forTarget(properties.endpoint)
+    private fun toRecordSpec(serverProperties: ProxyServerProperties): RecordSpec = WireMock.recordSpec()
+        .forTarget(serverProperties.endpoint)
         .ignoreRepeatRequests()
         .makeStubsPersistent(true)
         .extractTextBodiesOver(0)
