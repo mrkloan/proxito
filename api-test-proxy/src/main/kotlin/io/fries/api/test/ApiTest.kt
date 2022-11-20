@@ -1,6 +1,5 @@
 package io.fries.api.test
 
-import io.fries.api.test.ApiTestMode.REPLAY
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.test.context.SpringBootTest
@@ -19,21 +18,16 @@ import kotlin.annotation.AnnotationTarget.CLASS
 @Target(CLASS)
 @Retention(RUNTIME)
 annotation class ApiTest(
-    val mode: ApiTestMode = REPLAY
+    val profiles: Array<String> = ["replay"]
 )
-
-enum class ApiTestMode {
-    /** Act as an HTTP proxy and record the partner's response. */
-    RECORD,
-
-    /** Act as an HTTP stub, never calling the actual partner, and provide the recorded responses. */
-    REPLAY
-}
 
 class ApiTestProfileResolver : ActiveProfilesResolver {
     override fun resolve(testClass: Class<*>): Array<String> = testClass
         .declaredAnnotations
         .filterIsInstance<ApiTest>()
-        .map { it.mode.name.lowercase() }
+        .flatMap {
+            it.profiles
+                .map(String::lowercase)
+        }
         .toTypedArray()
 }
