@@ -4,12 +4,17 @@ import io.fries.api.test.ApiTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpStatus.OK
 import org.springframework.web.util.DefaultUriBuilderFactory
+import java.time.ZonedDateTime
 
 @ApiTest
 internal class JourneyControllerTest {
+
+    @Autowired
+    private lateinit var clock: () -> ZonedDateTime
 
     private lateinit var testRestTemplate: TestRestTemplate
 
@@ -22,8 +27,9 @@ internal class JourneyControllerTest {
 
     @Test
     internal fun should_find_subways_operated_by_ratp() {
+        val departureDate = clock.invoke().toLocalDate()
         val response = testRestTemplate.getForEntity(
-            "/api/journeys?origin=2.29460;48.87358&destination=2.34893;48.85720&departureDateTime=2022-11-30T10:00:00Z",
+            "/api/journeys?origin=2.29460;48.87358&destination=2.34893;48.85720&departureDateTime=${departureDate}T10:00:00Z",
             String::class.java
         )
 

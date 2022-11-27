@@ -7,8 +7,10 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import io.fries.api.test.ApiTestContext
 import io.fries.api.test.proxy.wiremock.JsonValidationProperties
 import io.fries.api.test.proxy.wiremock.ROOT_DIRECTORY
+import io.fries.api.test.proxy.wiremock.replay.template.DateTemplate
 import io.fries.api.test.proxy.wiremock.validate.validation.json.JsonStringAssert.Companion.assertThatJsonString
 import org.assertj.core.api.Assertions.fail
+import wiremock.com.github.jknack.handlebars.Handlebars
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -16,7 +18,8 @@ import java.nio.file.Path
 class JsonResponseValidation(
     private val apiTestContext: ApiTestContext,
     private val serverName: String,
-    private val properties: JsonValidationProperties
+    private val properties: JsonValidationProperties,
+    private val dateTemplate: DateTemplate
 ) : StubMappingTransformer() {
 
     override fun transform(stubMapping: StubMapping, files: FileSource, parameters: Parameters?) = stubMapping.apply {
@@ -28,12 +31,16 @@ class JsonResponseValidation(
         files.deleteFile(bodyFileName)
 
         val responsesDirectory = Path.of("$ROOT_DIRECTORY/$apiTestContext/$serverName/__files")
-        val expectedResponse = readExpectedResponseIn(responsesDirectory)
+        val templatedResponse = readExpectedResponseTemplateIn(responsesDirectory)
+        val expectedResponse = Handlebars()
+            .registerHelper(DateTemplate.NAME, dateTemplate)
+            .compileInline(templatedResponse)
+            .apply(Any())
 
         assertThatJsonString(actualResponse).isEqualToIgnoringFields(expectedResponse, properties.fieldsToIgnore)
     }
 
-    private fun readExpectedResponseIn(directory: Path): String {
+    private fun readExpectedResponseTemplateIn(directory: Path): String {
         if (Files.notExists(directory)) {
             return fail("Directory $directory does not exist")
         }

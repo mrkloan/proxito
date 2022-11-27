@@ -5,8 +5,7 @@ test.wiremock:
       endpoint: "http://127.0.0.1:9090"
       validators:
         json:
-          fields-to-ignore:
-            - 'href'
+          fields-to-ignore: [ ]
   replay:
     - name: 'navitia'
       port: 9001
