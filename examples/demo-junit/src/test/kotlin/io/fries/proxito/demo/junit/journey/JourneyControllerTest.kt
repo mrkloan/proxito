@@ -1,6 +1,6 @@
 package io.fries.proxito.demo.junit.journey
 
-import io.fries.proxito.core.Proxito
+import io.fries.proxito.junit.Proxito
 import io.fries.proxito.core.context.ProxitoClock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpStatus.OK
 import org.springframework.web.util.DefaultUriBuilderFactory
-import java.time.ZonedDateTime
 
 @Proxito
 internal class JourneyControllerTest {

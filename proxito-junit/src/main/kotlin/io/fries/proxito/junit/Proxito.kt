@@ -1,4 +1,4 @@
-package io.fries.proxito.core
+package io.fries.proxito.junit
 
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan

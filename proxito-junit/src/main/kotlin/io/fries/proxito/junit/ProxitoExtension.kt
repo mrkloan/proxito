@@ -1,8 +1,8 @@
-package io.fries.proxito.core
+package io.fries.proxito.junit
 
-import io.fries.proxito.core.context.JunitContext
 import io.fries.proxito.core.proxy.ProxyServers
 import io.fries.proxito.core.proxy.ProxyServersFactory
+import io.fries.proxito.junit.context.JunitContext
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
