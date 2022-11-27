@@ -1,3 +1,4 @@
 .idea
 target
+demo-api/src/test/resources/wiremock
 demo-test/src/test/resources/wiremock

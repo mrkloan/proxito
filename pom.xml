@@ -18,6 +18,8 @@
     </parent>
 
     <modules>
+        <module>api-test-proxy</module>
+        <module>api-test-proxy-wiremock</module>
         <module>demo-api</module>
         <module>demo-test</module>
     </modules>
