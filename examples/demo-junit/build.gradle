@@ -1,0 +1,7 @@
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    testImplementation project(':proxito-core')
+    testImplementation project(':proxito-wiremock')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

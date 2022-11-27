@@ -1,7 +1,0 @@
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    testImplementation project(':api-test-proxy')
-    testImplementation project(':api-test-proxy-wiremock')
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}

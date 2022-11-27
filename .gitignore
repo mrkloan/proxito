@@ -6,5 +6,5 @@
 build
 
 # WireMock
-demo-api/src/test/resources/wiremock
-demo-test/src/test/resources/wiremock
+examples/demo-junit/src/test/resources/wiremock
+examples/demo-cucumber/src/test/resources/wiremock

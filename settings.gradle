@@ -1,6 +1,7 @@
 rootProject.name = 'proxito'
 
-include 'api-test-proxy'
-include 'api-test-proxy-wiremock'
-include 'demo-api'
-include 'demo-test'
+include ':proxito-core'
+include ':proxito-wiremock'
+
+include ':examples:demo-junit'
+include ':examples:demo-cucumber'
