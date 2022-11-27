@@ -1,4 +1,10 @@
+# IntelliJ
 .idea
-target
+
+# Gradle
+.gradle
+build
+
+# WireMock
 demo-api/src/test/resources/wiremock
 demo-test/src/test/resources/wiremock
