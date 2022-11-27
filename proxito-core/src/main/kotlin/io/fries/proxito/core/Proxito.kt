@@ -13,18 +13,22 @@ import kotlin.annotation.AnnotationTarget.CLASS
 @SpringBootTest(webEnvironment = DEFINED_PORT)
 @ComponentScan("io.fries.proxito")
 @ConfigurationPropertiesScan("io.fries.proxito")
-@ActiveProfiles(resolver = ApiTestProfileResolver::class)
-@ExtendWith(ApiTestExtension::class)
+@ActiveProfiles(resolver = ProxitoProfilesResolver::class)
+@ExtendWith(ProxitoExtension::class)
 @Target(CLASS)
 @Retention(RUNTIME)
-annotation class ApiTest(
+annotation class Proxito(
     val profiles: Array<String> = ["replay"]
 )
 
-class ApiTestProfileResolver : ActiveProfilesResolver {
+class ProxitoProfilesResolver : ActiveProfilesResolver {
     override fun resolve(testClass: Class<*>): Array<String> = testClass
         .declaredAnnotations
-        .filterIsInstance<ApiTest>()
-        .flatMap { it.profiles.map(String::lowercase) }
+        .filterIsInstance<Proxito>()
+        .flatMap { proxito ->
+            proxito.profiles.map { profile ->
+                profile.lowercase().trim()
+            }
+        }
         .toTypedArray()
 }

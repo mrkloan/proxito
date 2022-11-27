@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.Extension
 import com.github.tomakehurst.wiremock.recording.RecordSpec
-import io.fries.proxito.core.ApiTestContext
+import io.fries.proxito.core.context.ProxitoContext
 import io.fries.proxito.core.proxy.ProxyServer
 import io.fries.proxito.core.proxy.ProxyServers
 import io.fries.proxito.core.proxy.ProxyServersFactory
@@ -25,49 +25,49 @@ class ValidateConfiguration {
         wireMockProperties: WireMockProperties,
         dateTemplate: DateTemplate
     ): ProxyServersFactory =
-        ProxyServersFactory { apiTestContext ->
-            ProxyServers(toValidateProxyServer(apiTestContext, wireMockProperties, dateTemplate))
+        ProxyServersFactory { context ->
+            ProxyServers(toValidateProxyServer(context, wireMockProperties, dateTemplate))
         }
 
     private fun toValidateProxyServer(
-        apiTestContext: ApiTestContext,
+        context: ProxitoContext,
         wireMockProperties: WireMockProperties,
         dateTemplate: DateTemplate
     ): List<ProxyServer> = wireMockProperties.validate.map { serverProperties ->
         ValidateProxyServer(
-            toWireMockServer(apiTestContext, serverProperties, dateTemplate),
+            toWireMockServer(context, serverProperties, dateTemplate),
             toRecordSpec(serverProperties)
         )
     }
 
     private fun toWireMockServer(
-        apiTestContext: ApiTestContext,
+        context: ProxitoContext,
         serverProperties: ProxyServerProperties,
         dateTemplate: DateTemplate
     ): WireMockServer {
         return WireMockServer(
             WireMockConfiguration.wireMockConfig()
                 .port(serverProperties.port)
-                .withRootDirectory("$ROOT_DIRECTORY/$apiTestContext/${serverProperties.name}")
-                .extensions(*toExtensions(apiTestContext, serverProperties, dateTemplate))
+                .withRootDirectory("$ROOT_DIRECTORY/${context.path()}/${serverProperties.name}")
+                .extensions(*toExtensions(context, serverProperties, dateTemplate))
         )
     }
 
     private fun toExtensions(
-        apiTestContext: ApiTestContext,
+        context: ProxitoContext,
         serverProperties: ProxyServerProperties,
         dateTemplate: DateTemplate
     ): Array<Extension> = listOfNotNull(
-        jsonResponseValidation(apiTestContext, serverProperties, dateTemplate)
+        jsonResponseValidation(context, serverProperties, dateTemplate)
     ).toTypedArray()
 
     private fun jsonResponseValidation(
-        apiTestContext: ApiTestContext,
+        context: ProxitoContext,
         serverProperties: ProxyServerProperties,
         dateTemplate: DateTemplate
     ): JsonResponseValidation? = serverProperties.validators
         ?.json
-        ?.let { JsonResponseValidation(apiTestContext, serverProperties.name, it, dateTemplate) }
+        ?.let { JsonResponseValidation(context, serverProperties.name, it, dateTemplate) }
 
     private fun toRecordSpec(properties: ProxyServerProperties): RecordSpec = WireMock.recordSpec()
         .forTarget(properties.endpoint)

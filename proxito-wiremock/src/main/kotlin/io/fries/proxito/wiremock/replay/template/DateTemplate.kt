@@ -1,14 +1,15 @@
 package io.fries.proxito.wiremock.replay.template
 
+import io.fries.proxito.core.context.ProxitoClock
+import io.fries.proxito.core.context.ProxitoContext
 import org.springframework.stereotype.Component
 import wiremock.com.github.jknack.handlebars.Helper
 import wiremock.com.github.jknack.handlebars.Options
 import java.time.Duration
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @Component
-class DateTemplate(val clock: () -> ZonedDateTime) : Helper<Any?> {
+class DateTemplate(val clock: ProxitoClock) : Helper<Any?> {
 
     companion object {
         const val NAME = "date"
@@ -22,8 +23,7 @@ class DateTemplate(val clock: () -> ZonedDateTime) : Helper<Any?> {
         val pattern = DateTimeFormatter.ofPattern(options.hash("pattern"))
         val offset = Duration.parse(options.hash("offset"))
 
-        return clock
-            .invoke()
+        return clock.now()
             .plus(offset)
             .format(pattern)
     }

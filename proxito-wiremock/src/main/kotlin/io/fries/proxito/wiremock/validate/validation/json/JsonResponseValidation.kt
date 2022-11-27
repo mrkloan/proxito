@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.common.FileSource
 import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.StubMappingTransformer
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import io.fries.proxito.core.ApiTestContext
+import io.fries.proxito.core.context.ProxitoContext
 import io.fries.proxito.wiremock.JsonValidationProperties
 import io.fries.proxito.wiremock.ROOT_DIRECTORY
 import io.fries.proxito.wiremock.replay.template.DateTemplate
@@ -16,7 +16,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class JsonResponseValidation(
-    private val apiTestContext: ApiTestContext,
+    private val context: ProxitoContext,
     private val serverName: String,
     private val properties: JsonValidationProperties,
     private val dateTemplate: DateTemplate
@@ -30,7 +30,7 @@ class JsonResponseValidation(
 
         files.deleteFile(bodyFileName)
 
-        val responsesDirectory = Path.of("$ROOT_DIRECTORY/$apiTestContext/$serverName/__files")
+        val responsesDirectory = Path.of("$ROOT_DIRECTORY/${context.path()}/$serverName/__files")
         val templatedResponse = readExpectedResponseTemplateIn(responsesDirectory)
         val expectedResponse = Handlebars()
             .registerHelper(DateTemplate.NAME, dateTemplate)

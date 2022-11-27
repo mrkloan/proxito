@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.common.FileSource
 import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.StubMappingTransformer
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import io.fries.proxito.core.context.ProxitoClock
 import io.fries.proxito.wiremock.ProxyTransformerProperties
 import io.fries.proxito.wiremock.replay.template.DateTemplate
 import java.time.*
@@ -11,7 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
 
 class ResponseDateTransformer(
-    private val clock: () -> ZonedDateTime,
+    private val clock: ProxitoClock,
     private val properties: ProxyTransformerProperties
 ) : StubMappingTransformer() {
 
@@ -32,7 +33,7 @@ class ResponseDateTransformer(
         // The `replacement` pattern is intended to be written back into a text file, so it may contain unwanted additional escape chars.
         val unEscapedReplacement = properties.replacement.replace("\\", "")
         val responseTemporal = DateTimeFormatter.ofPattern(unEscapedReplacement).parse(responseDate)
-        val now = clock.invoke()
+        val now = clock.now()
         val responseZonedDateTime = toZonedDateTime(responseTemporal, now)
         val offset = Duration.between(now, responseZonedDateTime)
 

@@ -5,7 +5,8 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.Extension
 import com.github.tomakehurst.wiremock.recording.RecordSpec
-import io.fries.proxito.core.ApiTestContext
+import io.fries.proxito.core.context.ProxitoClock
+import io.fries.proxito.core.context.ProxitoContext
 import io.fries.proxito.core.proxy.ProxyServer
 import io.fries.proxito.core.proxy.ProxyServers
 import io.fries.proxito.core.proxy.ProxyServersFactory
@@ -22,37 +23,36 @@ import org.springframework.util.FileSystemUtils
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
-import java.time.ZonedDateTime
 
 @Configuration
 class RecordConfiguration {
 
     @Bean
-    fun proxyServersFactory(wireMockProperties: WireMockProperties, clock: () -> ZonedDateTime): ProxyServersFactory =
-        ProxyServersFactory { apiTestContext ->
-            ProxyServers(toRecordProxyServers(apiTestContext, wireMockProperties, clock))
+    fun proxyServersFactory(wireMockProperties: WireMockProperties, clock: ProxitoClock): ProxyServersFactory =
+        ProxyServersFactory { context ->
+            ProxyServers(toRecordProxyServers(context, wireMockProperties, clock))
         }
 
     private fun toRecordProxyServers(
-        apiTestContext: ApiTestContext,
+        context: ProxitoContext,
         wireMockProperties: WireMockProperties,
-        clock: () -> ZonedDateTime
+        clock: ProxitoClock
     ): List<ProxyServer> {
         return wireMockProperties.record
             .map { serverProperties ->
                 RecordProxyServer(
-                    toWireMockServer(apiTestContext, serverProperties, clock),
+                    toWireMockServer(context, serverProperties, clock),
                     toRecordSpec(serverProperties)
                 )
             }
     }
 
     private fun toWireMockServer(
-        apiTestContext: ApiTestContext,
+        context: ProxitoContext,
         serverProperties: ProxyServerProperties,
-        clock: () -> ZonedDateTime
+        clock: ProxitoClock
     ): WireMockServer {
-        val rootDirectory = Path.of("$ROOT_DIRECTORY/$apiTestContext/${serverProperties.name}")
+        val rootDirectory = Path.of("$ROOT_DIRECTORY/${context.path()}/${serverProperties.name}")
         createStubsDirectories(rootDirectory)
 
         return WireMockServer(
@@ -65,7 +65,7 @@ class RecordConfiguration {
 
     private fun toExtensions(
         serverProperties: ProxyServerProperties,
-        clock: () -> ZonedDateTime
+        clock: ProxitoClock
     ): Array<Extension> = listOfNotNull(
         IdempotentStubIdTransformer(serverProperties.name),
         ConnectionCloseResponseTransformer(),
@@ -73,7 +73,7 @@ class RecordConfiguration {
         responseDateTransformer(serverProperties, clock)
     ).toTypedArray()
 
-    private fun responseDateTransformer(serverProperties: ProxyServerProperties, clock: () -> ZonedDateTime) =
+    private fun responseDateTransformer(serverProperties: ProxyServerProperties, clock: ProxitoClock) =
         serverProperties.transformers
             ?.response
             ?.let { ResponseDateTransformer(clock, it) }

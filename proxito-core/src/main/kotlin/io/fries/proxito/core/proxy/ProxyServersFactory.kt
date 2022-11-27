@@ -1,7 +1,7 @@
 package io.fries.proxito.core.proxy
 
-import io.fries.proxito.core.ApiTestContext
+import io.fries.proxito.core.context.ProxitoContext
 
 fun interface ProxyServersFactory {
-    fun create(testContext: ApiTestContext): ProxyServers
+    fun create(context: ProxitoContext): ProxyServers
 }
