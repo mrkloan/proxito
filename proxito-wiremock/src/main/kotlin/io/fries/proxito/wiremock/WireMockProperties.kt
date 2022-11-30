@@ -1,12 +1,10 @@
 package io.fries.proxito.wiremock
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 import java.util.regex.Pattern
 
 internal const val ROOT_DIRECTORY: String = "src/test/resources/wiremock"
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "test.wiremock")
 data class WireMockProperties(
     val record: List<ProxyServerProperties> = listOf(),

@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformer
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.ResponseDefinition
-import org.apache.http.HttpHeaders
+import wiremock.org.apache.hc.core5.http.HttpHeaders.CONNECTION
 
 class ConnectionCloseResponseTransformer : ResponseDefinitionTransformer() {
 
@@ -16,7 +16,7 @@ class ConnectionCloseResponseTransformer : ResponseDefinitionTransformer() {
         files: FileSource,
         parameters: Parameters?
     ): ResponseDefinition = ResponseDefinitionBuilder.like(responseDefinition)
-        .withHeader(HttpHeaders.CONNECTION, "close")
+        .withHeader(CONNECTION, "close")
         .build()
 
     override fun getName(): String = "connection-close-response-transformer"

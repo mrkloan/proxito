@@ -8,10 +8,11 @@ dependencies {
     testImplementation 'org.junit.vintage:junit-vintage-engine'
 
     // Spring
+    testImplementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // Wiremock
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
+    testImplementation 'com.github.tomakehurst:wiremock-jre8-standalone'
     testImplementation 'com.jayway.jsonpath:json-path-assert'
 }
