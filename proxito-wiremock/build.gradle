@@ -3,5 +3,5 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
+    implementation 'com.github.tomakehurst:wiremock-jre8-standalone'
 }

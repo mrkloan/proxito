@@ -6,7 +6,7 @@ import io.fries.proxito.demo.cucumber.glue.world.request.ServerProperties
 import io.fries.proxito.demo.cucumber.glue.world.scenario.ScenarioId
 import org.assertj.core.api.Assertions.fail
 import org.springframework.boot.web.client.RestTemplateBuilder
-import org.springframework.http.HttpMethod
+import org.springframework.http.HttpMethod.GET
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
@@ -47,7 +47,7 @@ class World(
 
     fun performGet(endpoint: String) {
         try {
-            val requestEntity = requestBuilder.path(endpoint).build(HttpMethod.GET)
+            val requestEntity = requestBuilder.path(endpoint).build(GET)
             response = restTemplate.exchange(requestEntity, String::class.java)
         } catch (e: Exception) {
             fail(e.message, e)

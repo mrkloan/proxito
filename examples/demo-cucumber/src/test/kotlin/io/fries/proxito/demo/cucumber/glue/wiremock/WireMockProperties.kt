@@ -1,10 +1,8 @@
 package io.fries.proxito.demo.cucumber.glue.wiremock
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 import java.util.regex.Pattern
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "demo.test.wiremock")
 data class WireMockProperties(val servers: Map<String, WireMockServerProperties>)
 
